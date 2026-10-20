@@ -1,9 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "lunarlander-rl"
-version = "0.0.1"
+version = "0.1.0"
 description = "DQN vs PPO on LunarLander-v3 across many seeds, with robustness tests and Raspberry Pi 5 deployment"
 requires-python = ">=3.10,<3.13"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
-pythonpath = ["src"]
 testpaths = ["tests"]
+markers = ["slow: trains a real (tiny) model, a few seconds each"]
+filterwarnings = [
+    # Emitted by the SWIG bindings of Box2D, not by this project.
+    "ignore:builtin type .* has no __module__ attribute:DeprecationWarning",
+]

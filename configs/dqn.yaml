@@ -1,0 +1,37 @@
+# DQN on LunarLander-v3.
+#
+# Hyperparameters come from RL Baselines3 Zoo, hyperparams/dqn.yml
+# (commit eec15dc22e1ec7167064aae0c1218eefccaf0ff4).
+#
+# The Zoo tunes DQN for 1e5 steps, PPO for 1e6. I give both algorithms the
+# same budget of 1e6 environment steps, so DQN runs ten times longer than it
+# was tuned for. To keep the epsilon schedule identical to the tuned one
+# (decay over the first 12,000 steps), exploration_fraction is rescaled:
+# 0.12 * 1e5 = 0.012 * 1e6 = 12,000 steps.
+algo: dqn
+total_timesteps: 1000000
+n_envs: 1
+
+hyperparams:
+  learning_rate: 6.3e-4
+  batch_size: 128
+  buffer_size: 50000
+  learning_starts: 0
+  gamma: 0.99
+  target_update_interval: 250
+  train_freq: 4
+  gradient_steps: -1
+  exploration_fraction: 0.012
+  exploration_final_eps: 0.1
+
+policy_kwargs:
+  net_arch: [256, 256]
+
+# Must be identical in every config so curves are comparable.
+evaluation:
+  every_timesteps: 25000
+  episodes: 10
+  base_seed: 10000
+
+# Extra snapshots kept for the before/after video.
+checkpoints: [100000, 300000]

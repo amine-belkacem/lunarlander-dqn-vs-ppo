@@ -1,0 +1,33 @@
+# PPO on LunarLander-v3.
+#
+# Hyperparameters come from RL Baselines3 Zoo, hyperparams/ppo.yml
+# (commit eec15dc22e1ec7167064aae0c1218eefccaf0ff4), unchanged.
+# Network: SB3 default MlpPolicy, two hidden layers of 64 units for both
+# the actor and the critic.
+#
+# One PPO update consumes n_envs * n_steps = 16 * 1024 = 16,384 steps, so SB3
+# stops at the first multiple above 1e6 (62 updates = 1,015,808 steps). The
+# real step count is written to meta.json; evaluation points stay on the same
+# 25,000-step grid as DQN.
+algo: ppo
+total_timesteps: 1000000
+n_envs: 16
+
+hyperparams:
+  n_steps: 1024
+  batch_size: 64
+  gae_lambda: 0.98
+  gamma: 0.999
+  n_epochs: 4
+  ent_coef: 0.01
+
+policy_kwargs: {}
+
+# Must be identical in every config so curves are comparable.
+evaluation:
+  every_timesteps: 25000
+  episodes: 10
+  base_seed: 10000
+
+# Extra snapshots kept for the before/after video.
+checkpoints: [100000, 300000]
