@@ -1,0 +1,5 @@
+gymnasium[box2d]==1.4.0
+stable-baselines3==2.9.0
+torch==2.14.1
+pyyaml==6.0.3
+pytest==9.1.1

@@ -1,0 +1,9 @@
+[project]
+name = "lunarlander-rl"
+version = "0.0.1"
+description = "DQN vs PPO on LunarLander-v3 across many seeds, with robustness tests and Raspberry Pi 5 deployment"
+requires-python = ">=3.10,<3.13"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

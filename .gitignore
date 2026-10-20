@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Training outputs that are too large or too noisy to version.
+# Final models and result CSVs are added explicitly when they are published.
+runs/
+tensorboard/
+checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
