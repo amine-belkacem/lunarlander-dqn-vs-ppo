@@ -1,0 +1,53 @@
+{
+  "env_id": "LunarLander-v3",
+  "seed": 1,
+  "config": {
+    "algo": "dqn",
+    "total_timesteps": 1000000,
+    "n_envs": 1,
+    "hyperparams": {
+      "learning_rate": 0.00063,
+      "batch_size": 128,
+      "buffer_size": 50000,
+      "learning_starts": 0,
+      "gamma": 0.99,
+      "target_update_interval": 250,
+      "train_freq": 4,
+      "gradient_steps": -1,
+      "exploration_fraction": 0.012,
+      "exploration_final_eps": 0.1
+    },
+    "policy_kwargs": {
+      "net_arch": [
+        256,
+        256
+      ]
+    },
+    "evaluation": {
+      "every_timesteps": 25000,
+      "episodes": 10,
+      "base_seed": 10000
+    },
+    "checkpoints": [
+      100000,
+      300000
+    ]
+  },
+  "torch_threads": 1,
+  "git_commit": "d068f9e2b6a666d2fcc3e229a80c2bb9611e5512",
+  "versions": {
+    "python": "3.12.10",
+    "gymnasium": "1.4.0",
+    "stable_baselines3": "2.9.0",
+    "torch": "2.14.1+cpu"
+  },
+  "machine": {
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 23 Model 160 Stepping 0, AuthenticAMD"
+  },
+  "status": "done",
+  "actual_timesteps": 1000000,
+  "wall_seconds_total": 6907.4,
+  "wall_seconds_eval": 53.9,
+  "wall_seconds_train": 6853.5
+}

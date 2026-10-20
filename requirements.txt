@@ -3,3 +3,7 @@ stable-baselines3==2.9.0
 torch==2.14.1
 pyyaml==6.0.3
 pytest==9.1.1
+# figures and video
+matplotlib==3.11.2
+imageio==2.38.1
+imageio-ffmpeg==0.6.0

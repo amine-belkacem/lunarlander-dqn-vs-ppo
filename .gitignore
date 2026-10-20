@@ -5,11 +5,11 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 
-# Training outputs that are too large or too noisy to version.
-# Final models and result CSVs are added explicitly when they are published.
-runs/
+# Run outputs: the CSVs and meta.json files are versioned (they hold every
+# published number). Models are too heavy for git and go to GitHub releases.
+runs/**/*.zip
+runs/logs/
 tensorboard/
-checkpoints/
 
 # Editors / OS
 .vscode/
