@@ -56,7 +56,7 @@ The Zoo hyperparameters I use for DQN were tuned for 100k steps. I run it for 1M
 - **Same budget**: 1M environment steps for both. PPO stops at 1,015,808 because one PPO update consumes 16 × 1024 steps.
 - **Learning curve**: every 25k environment steps, 10 deterministic episodes, always the same 10 start seeds (10000 to 10009). The trigger counts environment steps rather than callback calls, otherwise PPO with 16 parallel envs would be evaluated 16 times less often than DQN.
 - **Final evaluation**: 100 deterministic episodes on seeds 1,000,000 to 1,000,099, never used during training.
-- **Hardware**: AMD Ryzen 3 7320U laptop, no GPU, 3 runs in parallel with 1 torch thread each. One thread measured twice as fast as four for these small networks.
+- **Hardware for v0.1**: AMD Ryzen 3 7320U laptop, no GPU, 3 runs in parallel with 1 torch thread each. One thread measured twice as fast as four for these small networks.
 - Each `runs/<algo>/seed_<k>/meta.json` stores the config, library versions, git commit and timings of the run.
 
 ## Roadmap
@@ -84,8 +84,8 @@ pytest -v
 python -m lunarlander_rl.train --config configs/ppo.yaml --seed 0
 python -m lunarlander_rl.evaluate --run-dir runs/ppo/seed_0
 
-# all J1 runs on Windows (3 in parallel), then figures, table and video
-.\scripts\run_seeds.ps1 -Seeds 0,1,2
+# several runs, 3 in parallel (Windows or Linux), then figures, table and video
+python -m lunarlander_rl.launcher dqn:0-2 ppo:0-2
 python scripts/plot_results.py
 python scripts/summarize.py
 python scripts/record_video.py
