@@ -45,6 +45,27 @@ def first_step_reaching(curve: Curve, threshold: float) -> int | None:
     return int(curve.timesteps[reached[0]]) if reached.size else None
 
 
+def last_points_mean(curve: Curve, n_points: int) -> float:
+    """Mean of the last n curve points (the end of training)."""
+    if n_points <= 0 or n_points > curve.mean_returns.size:
+        raise ValueError(f"need 1 to {curve.mean_returns.size} points, got {n_points}")
+    return float(np.mean(curve.mean_returns[-n_points:]))
+
+
+# Definition fixed in docs/preregistration_j2.md before the J2 runs.
+COLLAPSE_LAST_POINTS = 5
+COLLAPSE_LEVEL = 0.0
+
+
+def is_collapsed(curve: Curve, reach_threshold: float) -> bool:
+    """Reached the threshold at least once, then ended with a mean below 0.
+
+    "Ended" is the mean of the last 5 curve points (900k to 1M steps).
+    """
+    reached = first_step_reaching(curve, reach_threshold) is not None
+    return reached and last_points_mean(curve, COLLAPSE_LAST_POINTS) < COLLAPSE_LEVEL
+
+
 def snap_to_grid(timesteps: np.ndarray, every: int) -> np.ndarray:
     """Round evaluation steps to the nominal grid.
 
@@ -65,7 +86,7 @@ def mean_over_seeds(curves: list[Curve], every: int) -> Curve:
     return Curve(timesteps=np.array(common), mean_returns=means)
 
 
-def seed_run_dirs(runs_dir: Path, algo: str) -> list[Path]:
-    """runs/<algo>/seed_<k> directories sorted by seed number."""
-    dirs = [d for d in (Path(runs_dir) / algo).glob("seed_*") if d.is_dir()]
+def seed_run_dirs(runs_dir: Path, name: str) -> list[Path]:
+    """runs/<config name>/seed_<k> directories sorted by seed number."""
+    dirs = [d for d in (Path(runs_dir) / name).glob("seed_*") if d.is_dir()]
     return sorted(dirs, key=lambda d: int(d.name.split("_")[1]))

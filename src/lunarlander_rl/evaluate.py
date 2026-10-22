@@ -10,6 +10,7 @@ a separate set that was never used to look at results during training.
 
 import argparse
 import csv
+import json
 import sys
 from pathlib import Path
 
@@ -32,10 +33,17 @@ def write_results(path: Path, results) -> None:
 
 
 def algo_from_run_dir(run_dir: Path) -> str:
-    """runs/<algo>/seed_<k> -> <algo>"""
-    algo = run_dir.parent.name
+    """Read the algorithm from the run's meta.json.
+
+    The directory name is the config name (dqn_big_buffer, ...), not
+    necessarily the algorithm, so it cannot be used for this.
+    """
+    meta_path = Path(run_dir) / "meta.json"
+    if not meta_path.exists():
+        raise ValueError(f"{meta_path} not found, is {run_dir} a training run?")
+    algo = json.loads(meta_path.read_text(encoding="utf-8"))["config"]["algo"]
     if algo not in ALGO_CLASSES:
-        raise ValueError(f"cannot infer algorithm from {run_dir}, expected .../<dqn|ppo>/seed_<k>")
+        raise ValueError(f"{meta_path}: unknown algorithm {algo!r}")
     return algo
 
 

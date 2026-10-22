@@ -1,0 +1,31 @@
+# Ablation of configs/dqn.yaml for the pre-registered experiment in
+# docs/preregistration_j2.md. The ONLY change is buffer_size: 1,000,000
+# instead of 50,000, so the buffer keeps every transition of the run.
+#
+# Memory: SB3 preallocates the buffer. 1e6 transitions x (obs + next_obs,
+# 8 float32 each) = 64 MB, plus actions, rewards and flags: well under 0.2 GB.
+algo: dqn
+total_timesteps: 1000000
+n_envs: 1
+
+hyperparams:
+  learning_rate: 6.3e-4
+  batch_size: 128
+  buffer_size: 1000000
+  learning_starts: 0
+  gamma: 0.99
+  target_update_interval: 250
+  train_freq: 4
+  gradient_steps: -1
+  exploration_fraction: 0.012
+  exploration_final_eps: 0.1
+
+policy_kwargs:
+  net_arch: [256, 256]
+
+evaluation:
+  every_timesteps: 25000
+  episodes: 10
+  base_seed: 10000
+
+checkpoints: [100000, 300000]

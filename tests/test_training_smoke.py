@@ -35,7 +35,14 @@ def test_dqn_smoke_run(tmp_path):
         checkpoints=(1500,),
         hyperparams={**load_config(CONFIG_DIR / "dqn.yaml").hyperparams, "buffer_size": 2048},
     )
-    run_dir = train(config, seed=0, out_dir=tmp_path)
+    # A variant name must give its own directory, and evaluate.py must still
+    # find the algorithm (from meta.json, not from the directory name).
+    run_dir = train(config, seed=0, out_dir=tmp_path, name="dqn_variant")
+    assert run_dir == tmp_path / "dqn_variant" / "seed_0", (
+        f"ECHEC : obtenu {run_dir}, attendu {tmp_path / 'dqn_variant' / 'seed_0'}"
+    )
+    evaluate.main(["--run-dir", str(run_dir), "--episodes", "2"])
+    assert (run_dir / "final_eval.csv").exists(), "ECHEC : final_eval.csv absent, attendu présent"
 
     # DQN advances one step at a time: evaluations at 0, 1024 and 2048,
     # 2 episodes each -> 3 * 2 = 6 rows.

@@ -2,7 +2,9 @@
 
     python -m lunarlander_rl.train --config configs/ppo.yaml --seed 0
 
-Outputs go to <out-dir>/<algo>/seed_<seed>/:
+Outputs go to <out-dir>/<config name>/seed_<seed>/, where the config name is
+the YAML file name (dqn, ppo, dqn_big_buffer...), so a variant never
+overwrites the baseline runs of the same algorithm:
     curve.csv        every evaluation episode during training
     final_model.zip  policy at the end of training
     checkpoints/     snapshots listed in the config (for the video)
@@ -31,8 +33,8 @@ from lunarlander_rl.envs import ENV_ID
 ALGO_CLASSES = {"dqn": DQN, "ppo": PPO}
 
 
-def run_dir_for(out_dir: Path, algo: str, seed: int) -> Path:
-    return Path(out_dir) / algo / f"seed_{seed}"
+def run_dir_for(out_dir: Path, name: str, seed: int) -> Path:
+    return Path(out_dir) / name / f"seed_{seed}"
 
 
 def _git_commit() -> str:
@@ -47,13 +49,17 @@ def _git_commit() -> str:
         return "unknown"
 
 
-def train(config: RunConfig, seed: int, out_dir: Path, threads: int = 1) -> Path:
+def train(config: RunConfig, seed: int, out_dir: Path, threads: int = 1,
+          name: str | None = None) -> Path:
+    """Train one run. `name` defaults to the algorithm (runs/<algo>/seed_k)."""
+    name = name or config.algo
     torch.set_num_threads(threads)
-    run_dir = run_dir_for(out_dir, config.algo, seed)
+    run_dir = run_dir_for(out_dir, name, seed)
     run_dir.mkdir(parents=True, exist_ok=True)
 
     meta = {
         "env_id": ENV_ID,
+        "config_name": name,
         "seed": seed,
         "config": config.to_dict(),
         "torch_threads": threads,
@@ -120,7 +126,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.total_timesteps is not None:
         config = replace(config, total_timesteps=args.total_timesteps)
 
-    run_dir = train(config, seed=args.seed, out_dir=args.out_dir, threads=args.threads)
+    run_dir = train(config, seed=args.seed, out_dir=args.out_dir, threads=args.threads,
+                    name=args.config.stem)
     meta = json.loads((run_dir / "meta.json").read_text(encoding="utf-8"))
     print(f"{config.algo} seed {args.seed}: {meta['actual_timesteps']} steps in "
           f"{meta['wall_seconds_total']} s (eval {meta['wall_seconds_eval']} s) -> {run_dir}")
