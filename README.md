@@ -72,7 +72,7 @@ The Zoo hyperparameters I use for DQN were tuned for 100k steps. I run it for 1M
 
 ## Reproduce
 
-Python 3.10 to 3.12 (PyTorch has no wheels for newer versions yet).
+Python 3.10 to 3.13. CI runs the tests on 3.12 (my laptop) and 3.13 (Kaggle).
 
 ```bash
 python -m venv .venv

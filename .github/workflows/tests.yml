@@ -7,12 +7,16 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 3.12 is my laptop, 3.13 is what Kaggle runs.
+        python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
 
       # The default PyPI torch wheel on Linux ships CUDA (several GB).

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "lunarlander-rl"
 version = "0.1.0"
 description = "DQN vs PPO on LunarLander-v3 across many seeds, with robustness tests and Raspberry Pi 5 deployment"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<3.14"
 
 [tool.setuptools.packages.find]
 where = ["src"]

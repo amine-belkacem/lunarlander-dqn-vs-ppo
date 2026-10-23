@@ -20,6 +20,7 @@ Choices, all from measurements on my laptop (Ryzen 3 7320U, 4 cores):
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -29,6 +30,20 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = PROJECT_ROOT / "configs"
+SOURCE_DIR = Path(__file__).resolve().parents[1]
+
+
+def _child_env() -> dict[str, str]:
+    """Environment for the training processes, with this package importable.
+
+    Child processes must import lunarlander_rl even if `pip install -e .`
+    did not happen or failed (it did on Kaggle, whose Python was newer than
+    the version range in pyproject.toml), so the source folder is put first
+    on PYTHONPATH.
+    """
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join(filter(None, [str(SOURCE_DIR), env.get("PYTHONPATH")]))
+    return env
 
 
 @dataclass(frozen=True)
@@ -129,7 +144,7 @@ def run_jobs(queue: list[Job], runs_dir: Path, max_parallel: int, stagger_second
                 command += ["--total-timesteps", str(total_timesteps)]
             log_file = open(log_dir / f"{job.name}.log", "w", encoding="utf-8")
             process = subprocess.Popen(command, stdout=log_file, stderr=subprocess.STDOUT,
-                                       cwd=PROJECT_ROOT)
+                                       cwd=PROJECT_ROOT, env=_child_env())
             running.append((job, process, log_file))
             _log(f"started {job.name} ({len(queue)} waiting)")
             time.sleep(stagger_seconds)
@@ -143,7 +158,8 @@ def evaluate_finished(jobs: list[Job], runs_dir: Path) -> None:
         run_dir = runs_dir / job.config / f"seed_{job.seed}"
         if is_done(runs_dir, job) and not (run_dir / "final_eval.csv").exists():
             subprocess.run([sys.executable, "-W", "ignore", "-m", "lunarlander_rl.evaluate",
-                            "--run-dir", str(run_dir)], check=True, cwd=PROJECT_ROOT)
+                            "--run-dir", str(run_dir)], check=True, cwd=PROJECT_ROOT,
+                           env=_child_env())
 
 
 def main(argv: list[str] | None = None) -> int:
